@@ -1,4 +1,4 @@
-package spring.infinteBuyingUpbit.controller;
+package mingyu.infiniteBuyingUpbit.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

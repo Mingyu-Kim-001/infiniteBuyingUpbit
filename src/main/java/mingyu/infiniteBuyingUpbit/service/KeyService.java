@@ -1,4 +1,4 @@
-package spring.infinteBuyingUpbit.service;
+package mingyu.infiniteBuyingUpbit.service;
 
 //import com.auth0.jwt.JWT;
 //import com.auth0.jwt.algorithms.Algorithm;
