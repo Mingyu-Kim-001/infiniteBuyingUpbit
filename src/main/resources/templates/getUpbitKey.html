@@ -1,0 +1,17 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div class="container">
+    <form action="/getUpbitKey" method="post">
+        <div class="form-group">
+            <p>업비트 open api 키 발급이 선행되어야 함(https://www.upbit.com/service_center/open_api_guide)</p>
+            <label for="access_key">access_key</label>
+            <input type="text" id="access_key" name="access_key" placeholder="access_key.">
+            <label for="secret_key">secret_key</label>
+            <input type="text" id="secret_key" name="secret_key" placeholder="secret_key.">
+        </div>
+        <button type="submit">등록</button>
+    </form>
+</div> <!-- /container -->
+</body>
+</html>
