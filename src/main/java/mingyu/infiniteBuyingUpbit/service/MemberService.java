@@ -16,29 +16,5 @@ import java.util.UUID;
 
 @Service
 public class MemberService {
-    public void auth(String accessKey, String secretKey) {
 
-        String serverUrl = "https://api.upbit.com/v1/accounts";
-        Algorithm algorithm = Algorithm.HMAC256(secretKey);
-
-        String jwtToken = JWT.create()
-                .withClaim("access_key", accessKey)
-                .withClaim("nonce", UUID.randomUUID().toString())
-                .sign(algorithm);
-
-        String authenticationToken = "Bearer " + jwtToken;
-        try {
-            HttpClient client = HttpClientBuilder.create().build();
-            HttpGet request = new HttpGet(serverUrl);
-            request.setHeader("Content-Type", "application/json");
-            request.addHeader("Authorization", authenticationToken);
-
-            HttpResponse response = client.execute(request);
-            HttpEntity entity = response.getEntity();
-
-            System.out.println(EntityUtils.toString(entity, "UTF-8"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }

@@ -17,7 +17,11 @@ public class MemberController {
         Member member = new Member();
         member.setAccessKey(memberForm.getAccessKey());
         member.setSecretKey(memberForm.getSecretKey());
-        System.out.println(member.getAccessKey());
-        return "redirect:/";
+        if (member.auth()){
+            return "redirect:/";
+        }
+        else{
+            return "fail/authFail";
+        }
     }
 }
