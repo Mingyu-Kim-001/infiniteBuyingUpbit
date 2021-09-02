@@ -10,7 +10,7 @@ import mingyu.infiniteBuyingUpbit.domain.Member;
 public class MemberController {
     @GetMapping("/start")
     public String upbitKeyForm() {
-        return "getUpbitKey";
+        return "start";
     }
 
     @PostMapping(value = "/start")
