@@ -15,8 +15,8 @@ import java.io.IOException;
 import java.util.UUID;
 
 public class Upbit {
+    private static String serverUrl = "https://api.upbit.com";
     public static String auth(String accessKey, String secretKey) {
-        String serverUrl = "https://api.upbit.com/v1/accounts";
         Algorithm algorithm = Algorithm.HMAC256(secretKey);
 
         String jwtToken = JWT.create()
@@ -25,10 +25,16 @@ public class Upbit {
                 .sign(algorithm);
 
         String authenticationToken = "Bearer " + jwtToken;
+        if(getAssets(authenticationToken) == null){
+            return null;
+        }
+        return authenticationToken;
+    }
 
+    public static String getAssets(String authenticationToken) {
         try {
             HttpClient client = HttpClientBuilder.create().build();
-            HttpGet request = new HttpGet(serverUrl);
+            HttpGet request = new HttpGet(serverUrl + "/v1/accounts");
             request.setHeader("Content-Type", "application/json");
             request.addHeader("Authorization", authenticationToken);
 
@@ -36,21 +42,19 @@ public class Upbit {
             HttpEntity entity = response.getEntity();
             System.out.println(entity.getClass().getName());
             int statusCode = response.getStatusLine().getStatusCode();
+
             if (statusCode != 200){
                 return null;
             }
 
             String entityString = EntityUtils.toString(entity, "UTF-8");
             System.out.println(entityString);
-//            JSONObject result = new JSONObject(entityString);
             System.out.println(entity.getContent());
-
-
-
+            return entityString;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
-        return authenticationToken;
+
     }
 }

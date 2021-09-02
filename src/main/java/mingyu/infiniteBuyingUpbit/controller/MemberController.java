@@ -14,13 +14,9 @@ public class MemberController {
     }
 
     @PostMapping(value = "/start")
-    public String create(MemberForm memberForm) {
+    public String create(Member member) {
         String authenticationToken;
-        if((authenticationToken = Upbit.auth(memberForm.getAccessKey(),memberForm.getSecretKey())) != null){
-            Member member = new Member();
-            member.setAccessKey(memberForm.getAccessKey());
-            member.setSecretKey(memberForm.getSecretKey());
-            member.setName(memberForm.getName());
+        if((authenticationToken = Upbit.auth(member.getAccessKey(),member.getSecretKey())) != null){
             member.setAuthenticationToken(authenticationToken);
             return "redirect:/";
         }
