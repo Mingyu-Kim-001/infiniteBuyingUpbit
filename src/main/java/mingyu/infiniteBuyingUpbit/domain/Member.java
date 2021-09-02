@@ -51,37 +51,4 @@ public class Member {
         this.authenticationToken = authenticationToken;
     }
 
-    public boolean auth() {
-        String serverUrl = "https://api.upbit.com/v1/accounts";
-        Algorithm algorithm = Algorithm.HMAC256(secretKey);
-
-        String jwtToken = JWT.create()
-                .withClaim("access_key", accessKey)
-                        .withClaim("nonce", UUID.randomUUID().toString())
-                .sign(algorithm);
-
-        String authenticationToken = "Bearer " + jwtToken;
-
-        try {
-            HttpClient client = HttpClientBuilder.create().build();
-            HttpGet request = new HttpGet(serverUrl);
-            request.setHeader("Content-Type", "application/json");
-            request.addHeader("Authorization", authenticationToken);
-
-            HttpResponse response = client.execute(request);
-            HttpEntity entity = response.getEntity();
-            String entityString = EntityUtils.toString(entity, "UTF-8");
-            System.out.println(entityString);
-
-            if (entityString.equals("404 Not Found")){
-                return false;
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-        this.setAuthenticationToken("Bearer " + jwtToken);
-        return true;
-    }
 }
