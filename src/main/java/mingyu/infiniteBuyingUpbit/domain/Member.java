@@ -1,17 +1,10 @@
 package mingyu.infiniteBuyingUpbit.domain;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
+import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.util.UUID;
+import java.util.ArrayList;
 
+@Service
 public class Member {
 
     private Long id;
@@ -19,6 +12,7 @@ public class Member {
     private String accessKey;
     private String secretKey;
     private String authenticationToken;
+    private ArrayList assets = new ArrayList<Asset>();
 
     public Long getId() {
         return id;
@@ -51,4 +45,11 @@ public class Member {
         this.authenticationToken = authenticationToken;
     }
 
+    public ArrayList<Asset> getAssets() {
+        return assets;
+    }
+
+    public void setAssets(ArrayList<Asset> assets) {
+        this.assets = assets;
+    }
 }

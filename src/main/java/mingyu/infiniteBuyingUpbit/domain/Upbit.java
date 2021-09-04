@@ -8,10 +8,11 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class Upbit {
@@ -31,7 +32,7 @@ public class Upbit {
         return authenticationToken;
     }
 
-    public static String getAssets(String authenticationToken) {
+    public static ArrayList<Asset> getAssets(String authenticationToken) {
         try {
             HttpClient client = HttpClientBuilder.create().build();
             HttpGet request = new HttpGet(serverUrl + "/v1/accounts");
@@ -40,17 +41,25 @@ public class Upbit {
 
             HttpResponse response = client.execute(request);
             HttpEntity entity = response.getEntity();
-            System.out.println(entity.getClass().getName());
             int statusCode = response.getStatusLine().getStatusCode();
 
             if (statusCode != 200){
+                System.out.println("getAssets" + statusCode);
                 return null;
             }
-
             String entityString = EntityUtils.toString(entity, "UTF-8");
-            System.out.println(entityString);
-            System.out.println(entity.getContent());
-            return entityString;
+            JSONArray jsonArray = new JSONArray(entityString);
+            ArrayList<Asset> assets = new ArrayList<>();
+            for(int i = 0; i < jsonArray.length(); i++){
+                JSONObject currentAsset = jsonArray.getJSONObject(i);
+                Asset asset = new Asset();
+                asset.setCurrency(currentAsset.get("currency").toString());
+                asset.setBalance(currentAsset.getDouble("balance"));
+                asset.setLocked(currentAsset.getDouble("locked"));
+                asset.setAvg_buy_price(currentAsset.getDouble("avg_buy_price"));
+                assets.add(asset);
+            }
+            return assets;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
