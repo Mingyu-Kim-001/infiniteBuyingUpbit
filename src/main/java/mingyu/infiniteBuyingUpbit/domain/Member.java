@@ -11,7 +11,6 @@ public class Member {
     private String name;
     private String accessKey;
     private String secretKey;
-    private String authenticationToken;
     private ArrayList assets = new ArrayList<Asset>();
 
     public Long getId() {
@@ -37,12 +36,6 @@ public class Member {
     }
     public void setSecretKey(String secretKey) {
         this.secretKey = secretKey;
-    }
-    public String getAuthenticationToken() {
-        return authenticationToken;
-    }
-    public void setAuthenticationToken(String authenticationToken) {
-        this.authenticationToken = authenticationToken;
     }
 
     public ArrayList<Asset> getAssets() {

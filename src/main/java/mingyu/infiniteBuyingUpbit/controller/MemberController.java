@@ -23,15 +23,14 @@ public class MemberController {
     public String create(Member member) {
         String authenticationToken;
         ArrayList<Asset> assets;
-        if((authenticationToken = Upbit.auth(member.getAccessKey(),member.getSecretKey())) != null){
-            member.setAuthenticationToken(authenticationToken);
-            if ((assets = Upbit.getAssets(member.getAuthenticationToken())) != null) {
+        if((authenticationToken = Upbit.auth(member.getAccessKey(), member.getSecretKey())) != null){
+            if((assets = Upbit.getAssets(authenticationToken)) != null) {
                 member.setAssets(assets);
+                return "currentAssets";
             }
-            else{
+            else {
                 return "fail/getAssetsFail";
             }
-            return "currentAssets";
         }
         else{
             return "fail/authFail";

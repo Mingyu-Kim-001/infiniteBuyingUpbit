@@ -26,9 +26,6 @@ public class Upbit {
                 .sign(algorithm);
 
         String authenticationToken = "Bearer " + jwtToken;
-        if(getAssets(authenticationToken) == null){
-            return null;
-        }
         return authenticationToken;
     }
 
@@ -60,6 +57,7 @@ public class Upbit {
                 assets.add(asset);
             }
             return assets;
+
         } catch (IOException e) {
             e.printStackTrace();
             return null;

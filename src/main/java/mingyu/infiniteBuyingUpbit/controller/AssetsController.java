@@ -13,7 +13,7 @@ public class AssetsController {
 
     @GetMapping("/currentAssets")
     public String showAssetsTable(Model model){
-        if(member == null || member.getAuthenticationToken() == null){
+        if(member == null){
             return "fail/authFail";
         }
         model.addAttribute("member", member);
