@@ -1,0 +1,37 @@
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        table {
+            width: 100%;
+            border: 1px solid #444444;
+            text-align: center;
+        } th, td {
+                      border: 1px solid #444444;
+                  }
+    </style>
+</head>
+
+<body>
+    <h1 th:text="|${member.name}님의 현재 자산|"> </h1>
+<!--    <h1 th:text="${member.name}"></h1>-->
+    <table>
+        <tr>
+            <th>#</th>
+            <th>currency</th>
+            <th>balance</th>
+            <th>locked</th>
+            <th>avg_buy_price</th>
+        </tr>
+        <tr th:each="asset , index: ${member.assets}">
+            <td th:text="${index.index}">#</td>
+            <td th:text="${asset.currency}">currency</td>
+            <td th:text="${asset.balance}">balance</td>
+            <td th:text="${asset.locked}">locked</td>
+            <td th:text="${asset.avg_buy_price}">avg_buy_price</td>
+        </tr>
+    </table>
+
+</body>
+</html>
