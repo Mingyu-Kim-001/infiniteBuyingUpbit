@@ -1,0 +1,16 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div class="container">
+    <div>
+        <h1>무한매수법 대상 코인을 선택하세요.</h1>
+        <div class="form-group blu-margin">
+            <select class="form-control" th:field="${tickers}"  id="dropOperator">
+                <option value="0">select operator</option>
+                <option th:each="ticker : ${tickers.instanceMap}" th:value="${ticker.value}" th:text="${ticker.key}"></option>
+            </select>
+        </div>
+    </div>
+</div> <!-- /container -->
+</body>
+</html>

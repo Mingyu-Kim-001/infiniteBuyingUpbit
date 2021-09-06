@@ -8,11 +8,17 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.apache.tomcat.util.json.JSONParser;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class Upbit {
@@ -41,7 +47,6 @@ public class Upbit {
             int statusCode = response.getStatusLine().getStatusCode();
 
             if (statusCode != 200){
-                System.out.println("getAssets" + statusCode);
                 return null;
             }
             String entityString = EntityUtils.toString(entity, "UTF-8");
@@ -59,6 +64,30 @@ public class Upbit {
             return assets;
 
         } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static Map<String, String> getTickers(String authenticationToken){
+        String fiat = "KRW"; //현재는 KRW시장만 지원
+        Map<String, String> coins = new HashMap<>();
+        try{
+            URL url = new URL(serverUrl + "/v1/market/all");
+            BufferedReader bf;
+
+            bf = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"));
+            String result = bf.readLine();
+            System.out.println(result);
+            JSONArray jsonArray = new JSONArray(result);
+            for(int i = 0; i < jsonArray.length(); i++) {
+                JSONObject coin = jsonArray.getJSONObject(i);
+                if (coin.get("market").toString().split("-")[0].equals(fiat)) {
+                    coins.put(coin.get("korean_name").toString(), coin.get("market").toString());
+                }
+            }
+            return coins;
+        }catch(Exception e){
             e.printStackTrace();
             return null;
         }
