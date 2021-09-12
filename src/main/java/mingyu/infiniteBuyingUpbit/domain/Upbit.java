@@ -78,7 +78,6 @@ public class Upbit {
 
             bf = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"));
             String result = bf.readLine();
-            System.out.println(result);
             JSONArray jsonArray = new JSONArray(result);
             for(int i = 0; i < jsonArray.length(); i++) {
                 JSONObject coin = jsonArray.getJSONObject(i);

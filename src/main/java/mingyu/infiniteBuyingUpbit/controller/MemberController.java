@@ -2,6 +2,7 @@ package mingyu.infiniteBuyingUpbit.controller;
 
 import mingyu.infiniteBuyingUpbit.domain.Asset;
 import mingyu.infiniteBuyingUpbit.domain.Upbit;
+import mingyu.infiniteBuyingUpbit.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +15,12 @@ import java.util.Map;
 
 @Controller
 public class MemberController {
+    private final MemberService memberService;
 
+    @Autowired
+    public MemberController(MemberService memberService) {
+        this.memberService = memberService;
+    }
     @GetMapping("/start")
     public String upbitKeyForm() {
         return "start";
@@ -27,6 +33,7 @@ public class MemberController {
         if((authenticationToken = Upbit.auth(member.getAccessKey(), member.getSecretKey())) != null){
             if((assets = Upbit.getAssets(authenticationToken)) != null) {
                 member.setAssets(assets);
+                memberService.join(member);
                 return "currentAssets";
             }
             else {

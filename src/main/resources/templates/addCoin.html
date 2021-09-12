@@ -1,16 +1,43 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:form="http://www.w3.org/1999/xhtml">
+
 <body>
-<div class="container">
-    <div>
-        <h1>무한매수법 대상 코인을 선택하세요.</h1>
-        <div class="form-group blu-margin">
-            <select class="form-control" th:field="${tickers}"  id="dropOperator">
-                <option value="0">select operator</option>
-                <option th:each="ticker : ${tickers.instanceMap}" th:value="${ticker.value}" th:text="${ticker.key}"></option>
+
+    <h1>무한매수법 코인 옵션을 선택하세요.</h1>
+
+
+    <form action="/addCoin" method="post" id="coin">
+
+        <div class="form-group">
+<!--            <label for="coinName">코인이름</label>-->
+<!--            <input type="text" id="coinName" name="coinName" placeholder="코인 이름을 입력하세요.">-->
+<!--            <select th:field="*{tickerNames}">-->
+<!--                <option th:each="coin : ${tickerNames}" th:value="${coin}" th:text="${coin}">-->
+<!--                </option>-->
+<!--            </select>-->
+            코인이름
+            <select th:field="*{tickerNames}" form="coin" th:name="coinName">
+                <option th:each="coinName : ${tickerNames}" th:value="${coinName}" th:text="${coinName}">
+                </option>
             </select>
+
+            <label for="buyingAmounta">1회 매수량</label>
+            <input type="number" id="buyingAmounta" name="buyingAmount" placeholder="1회 매수량">
         </div>
-    </div>
-</div> <!-- /container -->
+        <button type="submit">등록</button>
+    </form>
+
+<!--    <select th:field="*{percentage}">-->
+<!--        <option th:each="i : ${#numbers.sequence(0, 100)}" th:value="${i}" th:text="${i}"-->
+<!--                th:selected="${i==75}"></option>-->
+<!--    </select>-->
+
+
+<!--<select th:field="*{koreanCoinNames}">-->
+<!--    <option th:each="coinName : ${koreanCoinNames}" th:value="${coinName}" th:text="${coinName}">-->
+<!--    </option>-->
+<!--</select>-->
+
+
 </body>
 </html>
