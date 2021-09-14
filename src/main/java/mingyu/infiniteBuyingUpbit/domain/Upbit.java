@@ -69,9 +69,10 @@ public class Upbit {
         }
     }
 
-    public static Map<String, String> getTickers(String authenticationToken){
+    public static ArrayList<String> getTickers(){
+//        String authenticationToken = Upbit.auth(member.getAccessKey(), member.getSecretKey());
         String fiat = "KRW"; //현재는 KRW시장만 지원
-        Map<String, String> coins = new HashMap<>();
+        ArrayList<String> coins = new ArrayList<String>();
         try{
             URL url = new URL(serverUrl + "/v1/market/all");
             BufferedReader bf;
@@ -82,7 +83,7 @@ public class Upbit {
             for(int i = 0; i < jsonArray.length(); i++) {
                 JSONObject coin = jsonArray.getJSONObject(i);
                 if (coin.get("market").toString().split("-")[0].equals(fiat)) {
-                    coins.put(coin.get("korean_name").toString(), coin.get("market").toString());
+                    coins.add(coin.get("market").toString());
                 }
             }
             return coins;
