@@ -17,7 +17,6 @@ public class AssetsController {
             return "fail/authFail";
         }
         model.addAttribute("member", member);
-        System.out.println(member.getAssets().get(0));
         return "currentAssets";
     }
 }

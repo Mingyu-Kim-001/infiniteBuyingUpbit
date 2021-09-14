@@ -14,7 +14,8 @@
 </head>
 
 <body>
-    <h1 th:text="|${member.name}님의 현재 자산|"> </h1>
+    <h1 th:text="|${member.name}님, 환영합니다|"></h1>
+    <h2 th:text="|${member.name}님의 현재 자산|"> </h2>
 <!--    <h1 th:text="${member.name}"></h1>-->
     <table>
         <tr>
@@ -32,6 +33,10 @@
             <td th:text="${asset.avg_buy_price}">avg_buy_price</td>
         </tr>
     </table>
+
+    <p>
+        <a href="/addCoin">무한매수법 코인 추가</a>
+    </p>
 
 </body>
 </html>
