@@ -30,17 +30,8 @@ public class AddCoinController {
 
     @GetMapping("/addCoin")
     public String dropDown(Model model){
-        Map<String, String> tickers = new HashMap<>();
-        tickers.put("비트코인", "KRW-BTC");
-        tickers.put("이더리움", "KRW-ETH");
-        ArrayList<String> koreanCoinNames = new ArrayList<>(tickers.keySet());
-//        Coin coin = new Coin();
-//        model.addAttribute(coin);
-        model.addAttribute("koreanCoinNames",koreanCoinNames);
-//        model.addAttribute(tickers);
-        ArrayList<String> tickerNames = new ArrayList<>();
-        tickerNames.add("KRW-BTC");
-        tickerNames.add("KRW-ETH");
+        ArrayList<String> tickerNames = Upbit.getTickers();
+//        System.out.println(tickerNames);
         model.addAttribute("tickerNames", tickerNames);
         model.addAttribute("coin", new Coin());
         return "addCoin";
