@@ -16,13 +16,13 @@
 <!--                </option>-->
 <!--            </select>-->
             코인이름
-            <select th:field="*{tickerNames}" form="coin" th:name="coinName">
-                <option th:each="coinName : ${tickerNames}" th:value="${coinName}" th:text="${coinName}">
+            <select class="form-control" th:field="*{tickerNames}" form="coin" th:name="coinName" th:selected="true">
+                <option th:each="tickerName : ${tickerNames}" th:value="${tickerName}" th:text="${tickerName}" th:selected="true" th:name="coinName">
                 </option>
             </select>
 
-            <label for="buyingAmounta">1회 매수량</label>
-            <input type="number" id="buyingAmounta" name="buyingAmount" placeholder="1회 매수량">
+            <label for="buyingAmount">1회 매수량</label>
+            <input type="number" id="buyingAmount" name="buyingAmount" placeholder="1회 매수량">
         </div>
         <button type="submit">등록</button>
     </form>

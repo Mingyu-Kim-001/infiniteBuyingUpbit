@@ -1,7 +1,7 @@
 package mingyu.infiniteBuyingUpbit.domain;
 
 public class Coin {
-    private String coinName;
+    public String coinName;
     private int buyingAmount;
 
     public String getCoinName() {
