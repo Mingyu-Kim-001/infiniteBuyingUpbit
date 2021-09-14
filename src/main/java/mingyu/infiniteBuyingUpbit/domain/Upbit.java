@@ -91,6 +91,5 @@ public class Upbit {
             e.printStackTrace();
             return null;
         }
-
     }
 }
