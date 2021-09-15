@@ -1,6 +1,46 @@
 package mingyu.infiniteBuyingUpbit.domain;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import com.google.gson.Gson;
 
+//업비트와 통신을 통해 데이터 주고받는 함수들 & 기타 유틸 함수들
 public class UpbitUtils {
+    private static String serverUrl = "https://api.upbit.com";
+
+    public static String auth(String accessKey, String secretKey) {
+        Algorithm algorithm = Algorithm.HMAC256(secretKey);
+
+        String jwtToken = JWT.create()
+                .withClaim("access_key", accessKey)
+                .withClaim("nonce", UUID.randomUUID().toString())
+                .sign(algorithm);
+
+        String authenticationToken = "Bearer " + jwtToken;
+        return authenticationToken;
+    }
     public static double getPriceUnit(int price){
         /*
         업비트의 경우 호가단위가 아래와 같다(21년 4월 21일 기준).
@@ -30,6 +70,261 @@ public class UpbitUtils {
         */
         double unit = UpbitUtils.getPriceUnit(price);
         return (int) (Math.floor(price / unit) * unit);
+    }
+
+    public static ArrayList<String> getTickers(){
+        String fiat = "KRW"; //현재는 KRW시장만 지원
+        ArrayList<String> coins = new ArrayList<String>();
+        try{
+            URL url = new URL(serverUrl + "/v1/market/all");
+            BufferedReader bf;
+
+            bf = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"));
+            String result = bf.readLine();
+            JSONArray jsonArray = new JSONArray(result);
+            for(int i = 0; i < jsonArray.length(); i++) {
+                JSONObject coin = jsonArray.getJSONObject(i);
+                if (coin.get("market").toString().split("-")[0].equals(fiat)) {
+                    coins.add(coin.get("market").toString());
+                }
+            }
+            return coins;
+        }catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static String getOrder(Member member, String uuid) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        String accessKey = member.getAccessKey();
+        String secretKey = member.getSecretKey();
+        HashMap<String, String> params = new HashMap<>();
+        params.put("uuid", uuid);
+
+        ArrayList<String> queryElements = new ArrayList<>();
+        for (Map.Entry<String, String> entity : params.entrySet()) {
+            queryElements.add(entity.getKey() + "=" + entity.getValue());
+        }
+
+        String queryString = String.join("&", queryElements.toArray(new String[0]));
+
+        MessageDigest md = MessageDigest.getInstance("SHA-512");
+        md.update(queryString.getBytes("UTF-8"));
+
+        String queryHash = String.format("%0128x", new BigInteger(1, md.digest()));
+
+        Algorithm algorithm = Algorithm.HMAC256(secretKey);
+        String jwtToken = JWT.create()
+                .withClaim("access_key", accessKey)
+                .withClaim("nonce", UUID.randomUUID().toString())
+                .withClaim("query_hash", queryHash)
+                .withClaim("query_hash_alg", "SHA512")
+                .sign(algorithm);
+
+        String authenticationToken = "Bearer " + jwtToken;
+
+        try {
+            HttpClient client = HttpClientBuilder.create().build();
+            HttpGet request = new HttpGet(serverUrl + "/v1/order?" + queryString);
+            request.setHeader("Content-Type", "application/json");
+            request.addHeader("Authorization", authenticationToken);
+
+            HttpResponse response = client.execute(request);
+            HttpEntity entity = response.getEntity();
+
+            return EntityUtils.toString(entity, "UTF-8");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String getOrders(Member member, String[] uuids) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        String accessKey = member.getAccessKey();
+        String secretKey = member.getSecretKey();
+
+        HashMap<String, String> params = new HashMap<>();
+        params.put("state", "done");
+
+        ArrayList<String> queryElements = new ArrayList<>();
+        for(Map.Entry<String, String> entity : params.entrySet()) {
+            queryElements.add(entity.getKey() + "=" + entity.getValue());
+        }
+        for(String uuid : uuids) {
+            queryElements.add("uuids[]=" + uuid);
+        }
+
+        String queryString = String.join("&", queryElements.toArray(new String[0]));
+
+        MessageDigest md = MessageDigest.getInstance("SHA-512");
+        md.update(queryString.getBytes("UTF-8"));
+
+        String queryHash = String.format("%0128x", new BigInteger(1, md.digest()));
+
+        Algorithm algorithm = Algorithm.HMAC256(secretKey);
+        String jwtToken = JWT.create()
+                .withClaim("access_key", accessKey)
+                .withClaim("nonce", UUID.randomUUID().toString())
+                .withClaim("query_hash", queryHash)
+                .withClaim("query_hash_alg", "SHA512")
+                .sign(algorithm);
+
+        String authenticationToken = "Bearer " + jwtToken;
+
+        try {
+            HttpClient client = HttpClientBuilder.create().build();
+            HttpGet request = new HttpGet(serverUrl + "/v1/orders?" + queryString);
+            request.setHeader("Content-Type", "application/json");
+            request.addHeader("Authorization", authenticationToken);
+
+            HttpResponse response = client.execute(request);
+            HttpEntity entity = response.getEntity();
+
+            return EntityUtils.toString(entity, "UTF-8");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static ArrayList<Asset> getAssets(Member member) {
+        String authenticationToken = UpbitUtils.auth(member.getAccessKey(), member.getSecretKey());
+        try {
+            HttpClient client = HttpClientBuilder.create().build();
+            HttpGet request = new HttpGet(serverUrl + "/v1/accounts");
+            request.setHeader("Content-Type", "application/json");
+            request.addHeader("Authorization", authenticationToken);
+
+            HttpResponse response = client.execute(request);
+            HttpEntity entity = response.getEntity();
+            int statusCode = response.getStatusLine().getStatusCode();
+
+            if (statusCode != 200){
+                return null;
+            }
+            String entityString = EntityUtils.toString(entity, "UTF-8");
+            JSONArray jsonArray = new JSONArray(entityString);
+            ArrayList<Asset> assets = new ArrayList<>();
+            for(int i = 0; i < jsonArray.length(); i++){
+                JSONObject currentAsset = jsonArray.getJSONObject(i);
+                Asset asset = new Asset();
+                asset.setCurrency(currentAsset.get("currency").toString());
+                asset.setBalance(currentAsset.getDouble("balance"));
+                asset.setLocked(currentAsset.getDouble("locked"));
+                asset.setAvg_buy_price(currentAsset.getDouble("avg_buy_price"));
+                assets.add(asset);
+            }
+            return assets;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static String deleteOrder(Member member, String uuid) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        String accessKey = member.getAccessKey();
+        String secretKey = member.getSecretKey();
+
+        HashMap<String, String> params = new HashMap<>();
+        params.put("uuid", uuid);
+
+        ArrayList<String> queryElements = new ArrayList<>();
+        for(Map.Entry<String, String> entity : params.entrySet()) {
+            queryElements.add(entity.getKey() + "=" + entity.getValue());
+        }
+
+        String queryString = String.join("&", queryElements.toArray(new String[0]));
+
+        MessageDigest md = MessageDigest.getInstance("SHA-512");
+        md.update(queryString.getBytes("UTF-8"));
+
+        String queryHash = String.format("%0128x", new BigInteger(1, md.digest()));
+
+        Algorithm algorithm = Algorithm.HMAC256(secretKey);
+        String jwtToken = JWT.create()
+                .withClaim("access_key", accessKey)
+                .withClaim("nonce", UUID.randomUUID().toString())
+                .withClaim("query_hash", queryHash)
+                .withClaim("query_hash_alg", "SHA512")
+                .sign(algorithm);
+
+        String authenticationToken = "Bearer " + jwtToken;
+
+        try {
+            HttpClient client = HttpClientBuilder.create().build();
+            HttpDelete request = new HttpDelete(serverUrl + "/v1/order?" + queryString);
+            request.setHeader("Content-Type", "application/json");
+            request.addHeader("Authorization", authenticationToken);
+
+            HttpResponse response = client.execute(request);
+            HttpEntity entity = response.getEntity();
+
+            return EntityUtils.toString(entity, "UTF-8");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String postOrders(Member member, String coinName, boolean isBuy, String volume, String price, boolean isMarket) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        String accessKey = member.getAccessKey();
+        String secretKey = member.getSecretKey();
+        String side = isBuy ? "bid" : "ask";
+        volume = isMarket ? volume : "";
+        String ord_type;
+        if (!isMarket) {
+            ord_type = "limit";
+        } else if (isBuy) {
+            ord_type = "price";
+        } else {
+            ord_type = "market";
+        }
+
+        HashMap<String, String> params = new HashMap<>();
+        params.put("market", coinName);
+        params.put("side", side);
+        params.put("volume", volume);
+        params.put("price", price);
+        params.put("ord_type", ord_type);
+
+        ArrayList<String> queryElements = new ArrayList<>();
+        for(Map.Entry<String, String> entity : params.entrySet()) {
+            queryElements.add(entity.getKey() + "=" + entity.getValue());
+        }
+
+        String queryString = String.join("&", queryElements.toArray(new String[0]));
+
+        MessageDigest md = MessageDigest.getInstance("SHA-512");
+        md.update(queryString.getBytes("UTF-8"));
+
+        String queryHash = String.format("%0128x", new BigInteger(1, md.digest()));
+
+        Algorithm algorithm = Algorithm.HMAC256(secretKey);
+        String jwtToken = JWT.create()
+                .withClaim("access_key", accessKey)
+                .withClaim("nonce", UUID.randomUUID().toString())
+                .withClaim("query_hash", queryHash)
+                .withClaim("query_hash_alg", "SHA512")
+                .sign(algorithm);
+
+        String authenticationToken = "Bearer " + jwtToken;
+
+        try {
+            HttpClient client = HttpClientBuilder.create().build();
+            HttpPost request = new HttpPost(serverUrl + "/v1/orders");
+            request.setHeader("Content-Type", "application/json");
+            request.addHeader("Authorization", authenticationToken);
+            request.setEntity(new StringEntity(new Gson().toJson(params)));
+
+            HttpResponse response = client.execute(request);
+            HttpEntity entity = response.getEntity();
+
+            return EntityUtils.toString(entity, "UTF-8");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

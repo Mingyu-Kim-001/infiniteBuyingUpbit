@@ -2,7 +2,7 @@ package mingyu.infiniteBuyingUpbit.controller;
 
 import mingyu.infiniteBuyingUpbit.domain.Coin;
 import mingyu.infiniteBuyingUpbit.domain.Member;
-import mingyu.infiniteBuyingUpbit.domain.Upbit;
+import mingyu.infiniteBuyingUpbit.domain.UpbitUtils;
 import mingyu.infiniteBuyingUpbit.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -10,13 +10,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 @Controller
 public class AddCoinController {
@@ -30,7 +26,7 @@ public class AddCoinController {
 
     @GetMapping("/addCoin")
     public String dropDown(Model model){
-        ArrayList<String> tickerNames = Upbit.getTickers();
+        ArrayList<String> tickerNames = UpbitUtils.getTickers();
 //        System.out.println(tickerNames);
         model.addAttribute("tickerNames", tickerNames);
         model.addAttribute("coin", new Coin());
@@ -49,6 +45,7 @@ public class AddCoinController {
         coin.setCoinName("KRW-BTC");
         System.out.println(coin.getCoinName());
         System.out.println(coin.getBuyingAmount());
+        member.coins.put(coin.getCoinName(), coin);
         return "home";
     }
 }

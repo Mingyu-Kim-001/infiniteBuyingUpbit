@@ -3,6 +3,7 @@ package mingyu.infiniteBuyingUpbit.domain;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 @Service
 public class Member {
@@ -11,7 +12,8 @@ public class Member {
     private String name;
     private String accessKey;
     private String secretKey;
-    private ArrayList assets = new ArrayList<Asset>();
+    public Map<String, Coin> coins;
+    public ArrayList assets = new ArrayList<Asset>();
 
     public Long getId() {
         return id;
@@ -38,11 +40,4 @@ public class Member {
         this.secretKey = secretKey;
     }
 
-    public ArrayList<Asset> getAssets() {
-        return assets;
-    }
-
-    public void setAssets(ArrayList<Asset> assets) {
-        this.assets = assets;
-    }
 }
