@@ -62,6 +62,7 @@ public class UpbitUtils {
         if(price >= 10) return 0.1;
         return 0.01;
     }
+
     //호가 단위에 가격을 맞춘다.
     public static int setPriceToUnit(int price){
         /*
@@ -95,9 +96,10 @@ public class UpbitUtils {
         }
     }
 
-    public static String getOrder(Member member, String uuid) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    public static String getOrder(Member member, Order order) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         String accessKey = member.getAccessKey();
         String secretKey = member.getSecretKey();
+        String uuid = order.getUuid();
         HashMap<String, String> params = new HashMap<>();
         params.put("uuid", uuid);
 
@@ -139,9 +141,13 @@ public class UpbitUtils {
         return null;
     }
 
-    public static String getOrders(Member member, String[] uuids) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    public static String getOrders(Member member, ArrayList<Order> orders) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         String accessKey = member.getAccessKey();
         String secretKey = member.getSecretKey();
+        ArrayList<String> uuids = new ArrayList<String>();
+        for (Order order : orders) {
+            uuids.add(order.getUuid());
+        }
 
         HashMap<String, String> params = new HashMap<>();
         params.put("state", "done");
@@ -204,7 +210,7 @@ public class UpbitUtils {
             }
             String entityString = EntityUtils.toString(entity, "UTF-8");
             JSONArray jsonArray = new JSONArray(entityString);
-            ArrayList<Asset> assets = new ArrayList<>();
+            ArrayList<Asset> assets = new ArrayList<Asset>();
             for(int i = 0; i < jsonArray.length(); i++){
                 JSONObject currentAsset = jsonArray.getJSONObject(i);
                 Asset asset = new Asset();
@@ -222,9 +228,10 @@ public class UpbitUtils {
         }
     }
 
-    public static String deleteOrder(Member member, String uuid) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    public static String deleteOrder(Member member, Order order) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         String accessKey = member.getAccessKey();
         String secretKey = member.getSecretKey();
+        String uuid = order.getUuid();
 
         HashMap<String, String> params = new HashMap<>();
         params.put("uuid", uuid);
@@ -326,5 +333,7 @@ public class UpbitUtils {
         }
         return null;
     }
+
+
 
 }

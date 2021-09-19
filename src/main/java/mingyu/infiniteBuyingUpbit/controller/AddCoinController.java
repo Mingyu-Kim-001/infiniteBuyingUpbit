@@ -45,7 +45,7 @@ public class AddCoinController {
         coin.setCoinName("KRW-BTC");
         System.out.println(coin.getCoinName());
         System.out.println(coin.getBuyingAmount());
-        member.coins.put(coin.getCoinName(), coin);
+        member.coins.add(coin);
         return "home";
     }
 }

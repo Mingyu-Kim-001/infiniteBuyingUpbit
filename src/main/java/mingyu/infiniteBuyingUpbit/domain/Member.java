@@ -12,7 +12,7 @@ public class Member {
     private String name;
     private String accessKey;
     private String secretKey;
-    public Map<String, Coin> coins;
+    public ArrayList<Coin> coins;
     public ArrayList assets = new ArrayList<Asset>();
 
     public Long getId() {
