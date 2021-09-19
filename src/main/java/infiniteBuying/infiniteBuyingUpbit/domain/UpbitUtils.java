@@ -2,6 +2,9 @@ package infiniteBuying.infiniteBuyingUpbit.domain;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -229,7 +232,7 @@ public class UpbitUtils {
         }
     }
 
-    public static String deleteOrder(Member member, Order order) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    public static Order deleteOrder(Member member, Order order) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         String accessKey = member.getAccessKey();
         String secretKey = member.getSecretKey();
         String uuid = order.getUuid();
@@ -268,14 +271,14 @@ public class UpbitUtils {
             HttpResponse response = client.execute(request);
             HttpEntity entity = response.getEntity();
 
-            return EntityUtils.toString(entity, "UTF-8");
+            return new Order(EntityUtils.toString(entity, "UTF-8"));
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public static String postOrders(Member member, String coinName, boolean isBuy, String volume, String price, boolean isMarket){
+    public static Order postOrders(Member member, String coinName, boolean isBuy, String volume, String price, boolean isMarket){
         /*
         member : 필수
         coinName : 필수
@@ -335,7 +338,7 @@ public class UpbitUtils {
             HttpResponse response = client.execute(request);
             HttpEntity entity = response.getEntity();
 
-            return EntityUtils.toString(entity, "UTF-8");
+            return new Order(EntityUtils.toString(entity, "UTF-8"));
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
