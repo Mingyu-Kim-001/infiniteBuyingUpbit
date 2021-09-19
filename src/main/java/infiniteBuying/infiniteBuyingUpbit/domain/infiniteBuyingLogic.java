@@ -1,7 +1,6 @@
 package infiniteBuying.infiniteBuyingUpbit.domain;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 
 
 //무한매수법 구현
@@ -12,7 +11,7 @@ public class infiniteBuyingLogic {
             System.out.println("coinName : " + coin.getCoinName() + "period : " + coin.getCurrentPeriod());
 
             //리셋 주기가 넘었다면 리셋
-            if (coin.getRemainingAmount() < coin.getBuyingAmount()) {
+            if (coin.getRemainingBudget() < coin.getMinimumBuying()) {
                 System.out.println("reset " + coin.getCoinName());
                 reset(member, coin);
             }
@@ -29,13 +28,19 @@ public class infiniteBuyingLogic {
 
     //일정 할당량을 구매한다.
     public static void buyQuota(Member member, Coin coin) {
-        int price = UpbitUtils.setPriceToUnit(coin.getBuyingAmount());
-        UpbitUtils.postOrders(member, coin.getCoinName(), true, "", Integer.toString(price), true);
+        double buyingAmount = UpbitUtils.setPriceToUnit(coin.getMinimumBuying());
+        UpbitUtils.postOrders(member, coin.getCoinName(), true, "", Double.toString(buyingAmount), true);
     }
 
     //현재 가격이 평균단가보다 낮을 경우 추가 구매한다.
     public static void buyIfLessThanAveragePrice(Member member, Coin coin) {
-        return;
+        double avgPrice = (coin.getTotalBudget() - coin.getRemainingBudget()) / coin.getCurrentAmount();
+        double currentPrice = UpbitUtils.getCurrentPrice(coin.getCoinName());
+        double margin = UpbitUtils.getPriceUnit(currentPrice) * 4; //시차 등을 감안하여 계산시 어느 정도의 마진을 둔다.
+        double buyingAmount = UpbitUtils.setPriceToUnit(coin.getMinimumBuying());
+        if (avgPrice > currentPrice - margin) {
+            UpbitUtils.postOrders(member, coin.getCoinName(), true, "", Double.toString(buyingAmount), true);
+        }
     }
 
     //리셋 주기가 넘은 코인들을 리셋한다.
@@ -53,7 +58,7 @@ public class infiniteBuyingLogic {
             Thread.sleep(1000);
 
             //모든 코인 매도
-            UpbitUtils.postOrders(member, coin.getCoinName(), false, coin.getCurrentAmount(), "", true);
+            UpbitUtils.postOrders(member, coin.getCoinName(), false, Double.toString(coin.getCurrentAmount()), "", true);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
@@ -61,8 +66,7 @@ public class infiniteBuyingLogic {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        //주기 초기화
-        coin.setCurrentPeriod(0);
+
         //member에 코인 정보 리셋
         coin.resetCoinInfo();
     }

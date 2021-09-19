@@ -4,11 +4,11 @@ import java.util.ArrayList;
 
 public class Coin {
     public String coinName;
-    private int buyingAmount; //1회 구매량
-    private int totalAmount; //설정된 코인 전체 구매량 상한(KRW).
-    private int remainingAmount; //설정된 구매 목표 총량에서 현재 남은 잔량(KRW). 이 값이 0이 되면 리셋함.
+    private int minimumBuying; //1일 최소 구매량(KRW). 하루에 최소 이만큼은 구매하게 된다.
+    private int totalBudget; //설정된 코인 전체 구매량 상한(KRW).
+    private int remainingBudget; //설정된 구매 목표 총량에서 현재 남은 잔량(KRW). 이 값이 0이 되면 리셋함.
     private int currentPeriod; //시행일수
-    private String currentAmount; //현재 코인 구매량(코인 단위) - ex) 0.01
+    private double currentAmount; //현재 코인 구매량(코인 단위) - ex) 0.01
     public ArrayList<Order> buyOrders = new ArrayList<Order>();
     public ArrayList<Order> sellOrders = new ArrayList<Order>();
 
@@ -17,11 +17,12 @@ public class Coin {
 
 
     public Coin() {
-        setRemainingAmount(0);
+        setRemainingBudget(0);
     }
 
     public void resetCoinInfo() {
-        setRemainingAmount(getTotalAmount());
+        setCurrentAmount(0.0);
+        setRemainingBudget(getTotalBudget());
         buyOrders = new ArrayList<Order>();
         sellOrders = new ArrayList<Order>();
     }
@@ -36,36 +37,36 @@ public class Coin {
         this.coinName = coinName;
     }
 
-    public int getBuyingAmount() {
-        return buyingAmount;
+    public int getMinimumBuying() {
+        return minimumBuying;
     }
 
-    public void setBuyingAmount(int buyingAmount) {
-        this.buyingAmount = buyingAmount;
+    public void setMinimumBuying(int minimumBuying) {
+        this.minimumBuying = minimumBuying;
     }
 
 
-    public String getCurrentAmount() {
+    public double getCurrentAmount() {
         return currentAmount;
     }
 
-    public void setCurrentAmount(String currentAmount) {
+    public void setCurrentAmount(double currentAmount) {
         this.currentAmount = currentAmount;
     }
-    public int getTotalAmount() {
-        return totalAmount;
+    public int getTotalBudget() {
+        return totalBudget;
     }
 
-    public void setTotalAmount(int totalAmount) {
-        this.totalAmount = totalAmount;
+    public void setTotalBudget(int totalBudget) {
+        this.totalBudget = totalBudget;
     }
 
-    public int getRemainingAmount() {
-        return remainingAmount;
+    public int getRemainingBudget() {
+        return remainingBudget;
     }
 
-    public void setRemainingAmount(int remainingAmount) {
-        this.remainingAmount = remainingAmount;
+    public void setRemainingBudget(int remainingBudget) {
+        this.remainingBudget = remainingBudget;
     }
 
     public int getCurrentPeriod() {

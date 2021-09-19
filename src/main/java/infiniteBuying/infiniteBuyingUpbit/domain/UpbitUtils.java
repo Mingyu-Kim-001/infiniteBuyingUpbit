@@ -45,7 +45,7 @@ public class UpbitUtils {
         String authenticationToken = "Bearer " + jwtToken;
         return authenticationToken;
     }
-    public static double getPriceUnit(int price){
+    public static double getPriceUnit(double price){
         /*
         업비트의 경우 호가단위가 아래와 같다(21년 4월 21일 기준).
         2,000,000원 이상 : 1,000원
@@ -68,13 +68,13 @@ public class UpbitUtils {
     }
 
     //호가 단위에 가격을 맞춘다.
-    public static int setPriceToUnit(int price){
+    public static int setPriceToUnit(double price){
         /*
         ex) 호가단위가 5원일시, 매수가격 2552원에 매수주문을 넣지 못한다. 2550원이나 2555로 단위를 맞춰서 주문을 넣어야 됨. 이를 맞춰 주는 함수
         price : 단위를 맞추려는 가격
         */
         double unit = UpbitUtils.getPriceUnit(price);
-        return (int) (Math.floor(price / unit) * unit);
+        return (int)Math.round(Math.round(price / unit) * unit);
     }
 
     public static ArrayList<String> getTickers(){
@@ -349,4 +349,22 @@ public class UpbitUtils {
         return null;
     }
 
+    public static double getCurrentPrice(String coinName) {
+
+        try{
+            URL url = new URL(serverUrl + "/v1/ticker");
+            BufferedReader bf;
+
+            bf = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"));
+            String result = bf.readLine();
+            JSONArray jsonArray = new JSONArray(result);
+
+            double currentPrice = Double.parseDouble(jsonArray.getJSONObject(0).get("trade_price").toString());
+
+            return currentPrice;
+        }catch(Exception e){
+            e.printStackTrace();
+            return -1;
+        }
+    }
 }

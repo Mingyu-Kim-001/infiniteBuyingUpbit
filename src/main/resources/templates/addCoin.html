@@ -9,35 +9,19 @@
     <form action="/addCoin" method="post" id="coin">
 
         <div class="form-group">
-<!--            <label for="coinName">코인이름</label>-->
-<!--            <input type="text" id="coinName" name="coinName" placeholder="코인 이름을 입력하세요.">-->
-<!--            <select th:field="*{tickerNames}">-->
-<!--                <option th:each="coin : ${tickerNames}" th:value="${coin}" th:text="${coin}">-->
+
+<!--            <select class="form-control" th:field="*{tickerNames}" form="coin" th:name="coinName" th:selected="true">-->
+<!--                <option th:each="tickerName : ${tickerNames}" th:value="${tickerName}" th:text="${tickerName}" th:selected="true" th:name="coinName">-->
 <!--                </option>-->
 <!--            </select>-->
-            코인이름
-            <select class="form-control" th:field="*{tickerNames}" form="coin" th:name="coinName" th:selected="true">
-                <option th:each="tickerName : ${tickerNames}" th:value="${tickerName}" th:text="${tickerName}" th:selected="true" th:name="coinName">
-                </option>
-            </select>
+            <label for="coinName">코인 이름</label>
+            <input type="text" id="coinName" name="coinName" placeholder="코인 이름">
 
-            <label for="buyingAmount">1회 매수량</label>
-            <input type="number" id="buyingAmount" name="buyingAmount" placeholder="1회 매수량">
+            <label for="totalBudget">총 예산</label>
+            <input type="number" id="totalBudget" name="totalBudget" placeholder="총 예산">
         </div>
         <button type="submit">등록</button>
     </form>
-
-<!--    <select th:field="*{percentage}">-->
-<!--        <option th:each="i : ${#numbers.sequence(0, 100)}" th:value="${i}" th:text="${i}"-->
-<!--                th:selected="${i==75}"></option>-->
-<!--    </select>-->
-
-
-<!--<select th:field="*{koreanCoinNames}">-->
-<!--    <option th:each="coinName : ${koreanCoinNames}" th:value="${coinName}" th:text="${coinName}">-->
-<!--    </option>-->
-<!--</select>-->
-
 
 </body>
 </html>

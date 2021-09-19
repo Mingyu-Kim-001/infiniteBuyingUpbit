@@ -42,9 +42,10 @@ public class AddCoinController {
 
 //        System.out.println(CoinName);
 //        model.addAttribute("coin", coin);
-        coin.setCoinName("KRW-BTC");
+//        coin.setCoinName("KRW-BTC");
+        coin.setMinimumBuying(Math.round(coin.getTotalBudget() / 40 / 2));
         System.out.println(coin.getCoinName());
-        System.out.println(coin.getBuyingAmount());
+        System.out.println(coin.getMinimumBuying());
         member.coins.put(coin.getCoinName(), coin);
         return "home";
     }
