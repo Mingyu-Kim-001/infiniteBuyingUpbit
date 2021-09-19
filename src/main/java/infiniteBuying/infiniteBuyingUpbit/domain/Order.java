@@ -1,4 +1,4 @@
-package mingyu.infiniteBuyingUpbit.domain;
+package infiniteBuying.infiniteBuyingUpbit.domain;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;

@@ -1,8 +1,9 @@
-package mingyu.infiniteBuyingUpbit.domain;
+package infiniteBuying.infiniteBuyingUpbit.domain;
 
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -12,8 +13,13 @@ public class Member {
     private String name;
     private String accessKey;
     private String secretKey;
-    public ArrayList<Coin> coins;
-    public ArrayList assets = new ArrayList<Asset>();
+    public Map<String, Coin> coins;
+    public ArrayList<Asset> assets;
+
+    public Member() {
+        coins = new HashMap<String, Coin>();
+        assets = new ArrayList<Asset>();
+    }
 
     public Long getId() {
         return id;

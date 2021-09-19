@@ -1,4 +1,5 @@
-package mingyu.infiniteBuyingUpbit.domain;
+package infiniteBuying.infiniteBuyingUpbit.domain;
+
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import org.apache.http.HttpEntity;
@@ -274,7 +275,15 @@ public class UpbitUtils {
         return null;
     }
 
-    public static String postOrders(Member member, String coinName, boolean isBuy, String volume, String price, boolean isMarket) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    public static String postOrders(Member member, String coinName, boolean isBuy, String volume, String price, boolean isMarket){
+        /*
+        member : 필수
+        coinName : 필수
+        isBuy : 필수
+        volume : isBuy가 false일 때 필수.
+        price : isBuy가 true일때 필수. (지정가 매수일 때는 매수가격. 즉 price가 1000이면 1000원 가격에 구매. 시장가 매수일 때는 총 매수량. 즉 price가 1000이면 1000원어치를 시장가에 매수)
+        isMarket : 필수조건
+         */
         String accessKey = member.getAccessKey();
         String secretKey = member.getSecretKey();
         String side = isBuy ? "bid" : "ask";
@@ -301,23 +310,22 @@ public class UpbitUtils {
         }
 
         String queryString = String.join("&", queryElements.toArray(new String[0]));
-
-        MessageDigest md = MessageDigest.getInstance("SHA-512");
-        md.update(queryString.getBytes("UTF-8"));
-
-        String queryHash = String.format("%0128x", new BigInteger(1, md.digest()));
-
-        Algorithm algorithm = Algorithm.HMAC256(secretKey);
-        String jwtToken = JWT.create()
-                .withClaim("access_key", accessKey)
-                .withClaim("nonce", UUID.randomUUID().toString())
-                .withClaim("query_hash", queryHash)
-                .withClaim("query_hash_alg", "SHA512")
-                .sign(algorithm);
-
-        String authenticationToken = "Bearer " + jwtToken;
-
         try {
+            MessageDigest md = MessageDigest.getInstance("SHA-512");
+            md.update(queryString.getBytes("UTF-8"));
+
+            String queryHash = String.format("%0128x", new BigInteger(1, md.digest()));
+
+            Algorithm algorithm = Algorithm.HMAC256(secretKey);
+            String jwtToken = JWT.create()
+                    .withClaim("access_key", accessKey)
+                    .withClaim("nonce", UUID.randomUUID().toString())
+                    .withClaim("query_hash", queryHash)
+                    .withClaim("query_hash_alg", "SHA512")
+                    .sign(algorithm);
+
+            String authenticationToken = "Bearer " + jwtToken;
+
             HttpClient client = HttpClientBuilder.create().build();
             HttpPost request = new HttpPost(serverUrl + "/v1/orders");
             request.setHeader("Content-Type", "application/json");
@@ -328,6 +336,10 @@ public class UpbitUtils {
             HttpEntity entity = response.getEntity();
 
             return EntityUtils.toString(entity, "UTF-8");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
