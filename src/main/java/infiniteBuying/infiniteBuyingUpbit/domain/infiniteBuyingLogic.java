@@ -29,6 +29,11 @@ public class infiniteBuyingLogic {
         UpbitUtils.postOrders(member, coin.getCoinName(), true, "", Integer.toString(coin.getBuyingAmount()), true);
     }
 
+    //현재 가격이 평균단가보다 낮을 경우 추가 구매한다.
+    public static void buyIfLessThanAveragePrice(Member member, Coin coin) {
+        return;
+    }
+
     //리셋 주기가 넘은 코인들을 리셋한다.
     public static void reset(Member member, Coin coin){
         try {
