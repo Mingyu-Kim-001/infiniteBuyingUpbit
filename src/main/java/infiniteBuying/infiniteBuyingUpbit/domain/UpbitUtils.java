@@ -349,6 +349,4 @@ public class UpbitUtils {
         return null;
     }
 
-
-
 }

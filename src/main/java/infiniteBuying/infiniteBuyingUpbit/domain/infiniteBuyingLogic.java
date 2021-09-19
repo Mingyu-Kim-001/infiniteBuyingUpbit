@@ -17,6 +17,9 @@ public class infiniteBuyingLogic {
                 reset(member, coin);
             }
 
+            //코인 구매
+            buyQuota(member, coin);
+            buyIfLessThanAveragePrice(member, coin);
 
             //period 1 추가
             coin.setCurrentPeriod(coin.getCurrentPeriod() + 1);
