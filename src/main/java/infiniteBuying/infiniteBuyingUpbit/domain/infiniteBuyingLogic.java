@@ -29,7 +29,8 @@ public class infiniteBuyingLogic {
 
     //일정 할당량을 구매한다.
     public static void buyQuota(Member member, Coin coin) {
-        UpbitUtils.postOrders(member, coin.getCoinName(), true, "", Integer.toString(coin.getBuyingAmount()), true);
+        int price = UpbitUtils.setPriceToUnit(coin.getBuyingAmount());
+        UpbitUtils.postOrders(member, coin.getCoinName(), true, "", Integer.toString(price), true);
     }
 
     //현재 가격이 평균단가보다 낮을 경우 추가 구매한다.
