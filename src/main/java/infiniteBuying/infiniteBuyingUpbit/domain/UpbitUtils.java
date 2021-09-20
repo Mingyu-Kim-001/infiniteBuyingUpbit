@@ -1,6 +1,10 @@
-package mingyu.infiniteBuyingUpbit.domain;
+package infiniteBuying.infiniteBuyingUpbit.domain;
+
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -41,7 +45,7 @@ public class UpbitUtils {
         String authenticationToken = "Bearer " + jwtToken;
         return authenticationToken;
     }
-    public static double getPriceUnit(int price){
+    public static double getPriceUnit(double price){
         /*
         업비트의 경우 호가단위가 아래와 같다(21년 4월 21일 기준).
         2,000,000원 이상 : 1,000원
@@ -62,14 +66,15 @@ public class UpbitUtils {
         if(price >= 10) return 0.1;
         return 0.01;
     }
+
     //호가 단위에 가격을 맞춘다.
-    public static int setPriceToUnit(int price){
+    public static int setPriceToUnit(double price){
         /*
         ex) 호가단위가 5원일시, 매수가격 2552원에 매수주문을 넣지 못한다. 2550원이나 2555로 단위를 맞춰서 주문을 넣어야 됨. 이를 맞춰 주는 함수
         price : 단위를 맞추려는 가격
         */
         double unit = UpbitUtils.getPriceUnit(price);
-        return (int) (Math.floor(price / unit) * unit);
+        return (int)Math.round(Math.round(price / unit) * unit);
     }
 
     public static ArrayList<String> getTickers(){
@@ -95,9 +100,10 @@ public class UpbitUtils {
         }
     }
 
-    public static String getOrder(Member member, String uuid) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    public static String getOrder(Member member, Order order) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         String accessKey = member.getAccessKey();
         String secretKey = member.getSecretKey();
+        String uuid = order.getUuid();
         HashMap<String, String> params = new HashMap<>();
         params.put("uuid", uuid);
 
@@ -139,9 +145,13 @@ public class UpbitUtils {
         return null;
     }
 
-    public static String getOrders(Member member, String[] uuids) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    public static String getOrders(Member member, ArrayList<Order> orders) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         String accessKey = member.getAccessKey();
         String secretKey = member.getSecretKey();
+        ArrayList<String> uuids = new ArrayList<String>();
+        for (Order order : orders) {
+            uuids.add(order.getUuid());
+        }
 
         HashMap<String, String> params = new HashMap<>();
         params.put("state", "done");
@@ -204,7 +214,7 @@ public class UpbitUtils {
             }
             String entityString = EntityUtils.toString(entity, "UTF-8");
             JSONArray jsonArray = new JSONArray(entityString);
-            ArrayList<Asset> assets = new ArrayList<>();
+            ArrayList<Asset> assets = new ArrayList<Asset>();
             for(int i = 0; i < jsonArray.length(); i++){
                 JSONObject currentAsset = jsonArray.getJSONObject(i);
                 Asset asset = new Asset();
@@ -222,9 +232,10 @@ public class UpbitUtils {
         }
     }
 
-    public static String deleteOrder(Member member, String uuid) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    public static Order deleteOrder(Member member, Order order) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         String accessKey = member.getAccessKey();
         String secretKey = member.getSecretKey();
+        String uuid = order.getUuid();
 
         HashMap<String, String> params = new HashMap<>();
         params.put("uuid", uuid);
@@ -260,14 +271,22 @@ public class UpbitUtils {
             HttpResponse response = client.execute(request);
             HttpEntity entity = response.getEntity();
 
-            return EntityUtils.toString(entity, "UTF-8");
+            return new Order(EntityUtils.toString(entity, "UTF-8"));
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public static String postOrders(Member member, String coinName, boolean isBuy, String volume, String price, boolean isMarket) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    public static Order postOrders(Member member, String coinName, boolean isBuy, String volume, String price, boolean isMarket){
+        /*
+        member : 필수
+        coinName : 필수
+        isBuy : 필수
+        volume : isBuy가 false일 때 필수.
+        price : isBuy가 true일때 필수. (지정가 매수일 때는 매수가격. 즉 price가 1000이면 1000원 가격에 구매. 시장가 매수일 때는 총 매수량. 즉 price가 1000이면 1000원어치를 시장가에 매수)
+        isMarket : 필수조건
+         */
         String accessKey = member.getAccessKey();
         String secretKey = member.getSecretKey();
         String side = isBuy ? "bid" : "ask";
@@ -294,23 +313,22 @@ public class UpbitUtils {
         }
 
         String queryString = String.join("&", queryElements.toArray(new String[0]));
-
-        MessageDigest md = MessageDigest.getInstance("SHA-512");
-        md.update(queryString.getBytes("UTF-8"));
-
-        String queryHash = String.format("%0128x", new BigInteger(1, md.digest()));
-
-        Algorithm algorithm = Algorithm.HMAC256(secretKey);
-        String jwtToken = JWT.create()
-                .withClaim("access_key", accessKey)
-                .withClaim("nonce", UUID.randomUUID().toString())
-                .withClaim("query_hash", queryHash)
-                .withClaim("query_hash_alg", "SHA512")
-                .sign(algorithm);
-
-        String authenticationToken = "Bearer " + jwtToken;
-
         try {
+            MessageDigest md = MessageDigest.getInstance("SHA-512");
+            md.update(queryString.getBytes("UTF-8"));
+
+            String queryHash = String.format("%0128x", new BigInteger(1, md.digest()));
+
+            Algorithm algorithm = Algorithm.HMAC256(secretKey);
+            String jwtToken = JWT.create()
+                    .withClaim("access_key", accessKey)
+                    .withClaim("nonce", UUID.randomUUID().toString())
+                    .withClaim("query_hash", queryHash)
+                    .withClaim("query_hash_alg", "SHA512")
+                    .sign(algorithm);
+
+            String authenticationToken = "Bearer " + jwtToken;
+
             HttpClient client = HttpClientBuilder.create().build();
             HttpPost request = new HttpPost(serverUrl + "/v1/orders");
             request.setHeader("Content-Type", "application/json");
@@ -320,11 +338,33 @@ public class UpbitUtils {
             HttpResponse response = client.execute(request);
             HttpEntity entity = response.getEntity();
 
-            return EntityUtils.toString(entity, "UTF-8");
+            return new Order(EntityUtils.toString(entity, "UTF-8"));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
 
+    public static double getCurrentPrice(String coinName) {
+
+        try{
+            URL url = new URL(serverUrl + "/v1/ticker");
+            BufferedReader bf;
+
+            bf = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"));
+            String result = bf.readLine();
+            JSONArray jsonArray = new JSONArray(result);
+
+            double currentPrice = Double.parseDouble(jsonArray.getJSONObject(0).get("trade_price").toString());
+
+            return currentPrice;
+        }catch(Exception e){
+            e.printStackTrace();
+            return -1;
+        }
+    }
 }

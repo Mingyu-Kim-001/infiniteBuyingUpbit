@@ -1,4 +1,4 @@
-package mingyu.infiniteBuyingUpbit.domain;
+package infiniteBuying.infiniteBuyingUpbit.domain;
 
 public class Asset {
     private String currency;

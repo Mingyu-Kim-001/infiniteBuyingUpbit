@@ -1,6 +1,6 @@
-package mingyu.infiniteBuyingUpbit.repository;
+package infiniteBuying.infiniteBuyingUpbit.repository;
 
-import mingyu.infiniteBuyingUpbit.domain.Member;
+import infiniteBuying.infiniteBuyingUpbit.domain.Member;
 
 import java.util.List;
 import java.util.Optional;

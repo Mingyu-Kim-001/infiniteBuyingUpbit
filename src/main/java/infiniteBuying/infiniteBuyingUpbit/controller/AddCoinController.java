@@ -1,9 +1,9 @@
-package mingyu.infiniteBuyingUpbit.controller;
+package infiniteBuying.infiniteBuyingUpbit.controller;
 
-import mingyu.infiniteBuyingUpbit.domain.Coin;
-import mingyu.infiniteBuyingUpbit.domain.Member;
-import mingyu.infiniteBuyingUpbit.domain.UpbitUtils;
-import mingyu.infiniteBuyingUpbit.repository.MemberRepository;
+import infiniteBuying.infiniteBuyingUpbit.domain.Coin;
+import infiniteBuying.infiniteBuyingUpbit.domain.Member;
+import infiniteBuying.infiniteBuyingUpbit.domain.UpbitUtils;
+import infiniteBuying.infiniteBuyingUpbit.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -42,9 +42,10 @@ public class AddCoinController {
 
 //        System.out.println(CoinName);
 //        model.addAttribute("coin", coin);
-        coin.setCoinName("KRW-BTC");
+//        coin.setCoinName("KRW-BTC");
+        coin.setMinimumBuying(Math.round(coin.getTotalBudget() / 40 / 2));
         System.out.println(coin.getCoinName());
-        System.out.println(coin.getBuyingAmount());
+        System.out.println(coin.getMinimumBuying());
         member.coins.put(coin.getCoinName(), coin);
         return "home";
     }

@@ -1,6 +1,6 @@
-package mingyu.infiniteBuyingUpbit.controller;
+package infiniteBuying.infiniteBuyingUpbit.controller;
 
-import mingyu.infiniteBuyingUpbit.domain.Member;
+import infiniteBuying.infiniteBuyingUpbit.domain.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

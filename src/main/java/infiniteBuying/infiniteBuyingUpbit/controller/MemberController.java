@@ -1,14 +1,13 @@
-package mingyu.infiniteBuyingUpbit.controller;
+package infiniteBuying.infiniteBuyingUpbit.controller;
 
-import mingyu.infiniteBuyingUpbit.domain.Asset;
-import mingyu.infiniteBuyingUpbit.domain.UpbitUtils;
-import mingyu.infiniteBuyingUpbit.domain.infiniteBuyingLogic;
-import mingyu.infiniteBuyingUpbit.service.MemberService;
+import infiniteBuying.infiniteBuyingUpbit.domain.Asset;
+import infiniteBuying.infiniteBuyingUpbit.domain.UpbitUtils;
+import infiniteBuying.infiniteBuyingUpbit.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import mingyu.infiniteBuyingUpbit.domain.Member;
+import infiniteBuying.infiniteBuyingUpbit.domain.Member;
 
 import java.util.ArrayList;
 
