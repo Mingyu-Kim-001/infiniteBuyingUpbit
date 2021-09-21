@@ -6,19 +6,20 @@ public class Coin {
     public String coinName;
     private int minimumBuying; //1일 최소 구매량(KRW). 하루에 최소 이만큼은 구매하게 된다.
     private int totalBudget; //설정된 코인 전체 구매량 상한(KRW).
-    private int remainingBudget; //설정된 구매 목표 총량에서 현재 남은 잔량(KRW). 이 값이 0이 되면 리셋함.
+    private int remainingBudget; //설정된 구매 목표 총량에서 현재 남은 잔량(KRW). 이 값이 minimumBuying값보다 작아지면 리셋.
     private int currentPeriod; //시행일수
     private double currentAmount; //현재 코인 구매량(코인 단위) - ex) 0.01
-    public ArrayList<Order> buyOrders = new ArrayList<Order>();
-    public ArrayList<Order> sellOrders = new ArrayList<Order>();
+    private ArrayList<Order> buyOrders = new ArrayList<Order>();
+    private ArrayList<Order> sellOrders = new ArrayList<Order>();
 
-
-
-
-
-    public Coin() {
-        setRemainingBudget(0);
+    public ArrayList<Order> getBuyOrders() {
+        return buyOrders;
     }
+
+    public ArrayList<Order> getSellOrders() {
+        return sellOrders;
+    }
+
 
     public void resetCoinInfo() {
         setCurrentAmount(0.0);
@@ -26,8 +27,6 @@ public class Coin {
         buyOrders = new ArrayList<Order>();
         sellOrders = new ArrayList<Order>();
     }
-
-
 
     public String getCoinName() {
         return coinName;
@@ -53,6 +52,7 @@ public class Coin {
     public void setCurrentAmount(double currentAmount) {
         this.currentAmount = currentAmount;
     }
+
     public int getTotalBudget() {
         return totalBudget;
     }

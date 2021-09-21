@@ -8,8 +8,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class AssetsController {
+    private final Member member;
     @Autowired
-    Member member;
+    public AssetsController(Member member) {
+        this.member = member;
+    }
 
     @GetMapping("/currentAssets")
     public String showAssetsTable(Model model){

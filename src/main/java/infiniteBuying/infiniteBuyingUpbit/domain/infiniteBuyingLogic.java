@@ -6,9 +6,11 @@ import java.security.NoSuchAlgorithmException;
 //무한매수법 구현
 public class infiniteBuyingLogic {
 
+    //하루에 한 번씩 매수 로직에 따라 매수한다.
     public static String batch(Member member) {
-        for (Coin coin : member.coins.values()) {
-            System.out.println("coinName : " + coin.getCoinName() + "period : " + coin.getCurrentPeriod());
+        for (Coin coin : member.getCoins().values()) {
+            System.out.println("coinName : " + coin.getCoinName() + " period : " + coin.getCurrentPeriod() + " start");
+            System.out.println("remaining Budget " + coin.getRemainingBudget() + " minimum buying " + coin.getMinimumBuying());
 
             //리셋 주기가 넘었다면 리셋
             if (coin.getRemainingBudget() < coin.getMinimumBuying()) {
@@ -18,18 +20,22 @@ public class infiniteBuyingLogic {
 
             //코인 구매
             buyQuota(member, coin);
-            buyIfLessThanAveragePrice(member, coin);
+            if (coin.getCurrentPeriod() > 0) {
+                buyIfLessThanAveragePrice(member, coin);
+            }
 
-            //period 1 추가
-            coin.setCurrentPeriod(coin.getCurrentPeriod() + 1);
-        }
-        return null;
+        //period 1 추가
+        coin.setCurrentPeriod(coin.getCurrentPeriod() + 1);
     }
+        return null;
+}
 
-    //일정 할당량을 구매한다.
+    //일일 최소 할당량을 매수한다. 첫 주기 때는, 한번에 일 최대량(최소량의 두 배)을 매수한다.
     public static void buyQuota(Member member, Coin coin) {
-        double buyingAmount = UpbitUtils.setPriceToUnit(coin.getMinimumBuying());
-        UpbitUtils.postOrders(member, coin.getCoinName(), true, "", Double.toString(buyingAmount), true);
+        double buyingAmount = UpbitUtils.setPriceToUnit(coin.getMinimumBuying()) * (coin.getCurrentPeriod() == 0 ? 1 : 2);
+        String result = UpbitUtils.postOrders(member, coin.getCoinName(), true, "", Double.toString(buyingAmount), true);
+        Order buyOrder = new Order(result);
+        System.out.println("buyQuota" + coin.getCoinName() + " at price " + buyOrder.getPrice() + "  buying amount " + buyingAmount);
     }
 
     //현재 가격이 평균단가보다 낮을 경우 추가 구매한다.
@@ -39,18 +45,21 @@ public class infiniteBuyingLogic {
         double margin = UpbitUtils.getPriceUnit(currentPrice) * 4; //시차 등을 감안하여 계산시 어느 정도의 마진을 둔다.
         double buyingAmount = UpbitUtils.setPriceToUnit(coin.getMinimumBuying());
         if (avgPrice > currentPrice - margin) {
-            UpbitUtils.postOrders(member, coin.getCoinName(), true, "", Double.toString(buyingAmount), true);
+            String result = UpbitUtils.postOrders(member, coin.getCoinName(), true, "", Double.toString(buyingAmount), true);
+            Order buyOrder = new Order(result);
+            System.out.println("buyIfLessThanAveragePrice " + coin.getCoinName() + " at price " + buyOrder.getPrice() + " and buying amount " + buyingAmount);
         }
+
     }
 
     //리셋 주기가 넘은 코인들을 리셋한다.
     public static void reset(Member member, Coin coin){
         try {
             //모든 매수, 매도 주문 취소
-            for (Order order : coin.buyOrders) {
+            for (Order order : coin.getBuyOrders()) {
                 UpbitUtils.deleteOrder(member, order);
             }
-            for (Order order : coin.sellOrders) {
+            for (Order order : coin.getSellOrders()) {
                 UpbitUtils.deleteOrder(member, order);
             }
 

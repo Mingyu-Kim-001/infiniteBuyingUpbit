@@ -46,7 +46,7 @@ public class Order {
             setPaid_fee(map.get("paid_fee"));
             setLocked(map.get("locked"));
             setExecuted_volume(map.get("excuted_volume"));
-            setTrades_count(map.get("trades_count"));
+            setTrades_count(String.valueOf(map.get("trades_count")));
         } catch (JsonParseException e) {
             e.printStackTrace();
         } catch (JsonMappingException e) {

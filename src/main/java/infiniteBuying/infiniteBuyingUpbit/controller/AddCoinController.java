@@ -3,6 +3,7 @@ package infiniteBuying.infiniteBuyingUpbit.controller;
 import infiniteBuying.infiniteBuyingUpbit.domain.Coin;
 import infiniteBuying.infiniteBuyingUpbit.domain.Member;
 import infiniteBuying.infiniteBuyingUpbit.domain.UpbitUtils;
+import infiniteBuying.infiniteBuyingUpbit.domain.infiniteBuyingLogic;
 import infiniteBuying.infiniteBuyingUpbit.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,13 +17,20 @@ import java.util.ArrayList;
 
 @Controller
 public class AddCoinController {
-    private final MemberRepository memberRepository;
+//    private final MemberRepository memberRepository;
+//    @Autowired
+//    public AddCoinController(MemberRepository memberRepository){
+//        this.memberRepository = memberRepository;
+//    }
+//    @Autowired
+//    Member member;
+
+    private final Member member;
+
     @Autowired
-    public AddCoinController(MemberRepository memberRepository){
-        this.memberRepository = memberRepository;
+    public AddCoinController(Member member) {
+        this.member = member;
     }
-    @Autowired
-    Member member;
 
     @GetMapping("/addCoin")
     public String dropDown(Model model){
@@ -35,18 +43,13 @@ public class AddCoinController {
 
     @PostMapping("/addCoin")
     public String addCoin(@ModelAttribute @Valid Coin coin){
-
-//        Member member = memberRepository.findAll().get(0); //일단 임시처리
-//        System.out.println(member.getName());
-//        Map<String, String> tickers = Upbit.getTickers(Upbit.auth(member.getAccessKey(), member.getSecretKey()));
-
-//        System.out.println(CoinName);
-//        model.addAttribute("coin", coin);
-//        coin.setCoinName("KRW-BTC");
         coin.setMinimumBuying(Math.round(coin.getTotalBudget() / 40 / 2));
+        coin.setRemainingBudget(coin.getTotalBudget());
         System.out.println(coin.getCoinName());
         System.out.println(coin.getMinimumBuying());
-        member.coins.put(coin.getCoinName(), coin);
+        System.out.println(coin.getRemainingBudget());
+        member.getCoins().put(coin.getCoinName(), coin);
+        infiniteBuyingLogic.batch(member);
         return "home";
     }
 }
