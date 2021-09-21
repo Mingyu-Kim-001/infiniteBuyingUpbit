@@ -13,8 +13,17 @@ public class Member {
     private String name;
     private String accessKey;
     private String secretKey;
-    public Map<String, Coin> coins;
-    public ArrayList<Asset> assets;
+
+    public Map<String, Coin> getCoins() {
+        return coins;
+    }
+
+    public ArrayList<Asset> getAssets() {
+        return assets;
+    }
+
+    private Map<String, Coin> coins;
+    private ArrayList<Asset> assets;
 
     public Member() {
         coins = new HashMap<String, Coin>();

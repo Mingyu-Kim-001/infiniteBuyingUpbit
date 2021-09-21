@@ -232,7 +232,7 @@ public class UpbitUtils {
         }
     }
 
-    public static Order deleteOrder(Member member, Order order) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    public static String deleteOrder(Member member, Order order) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         String accessKey = member.getAccessKey();
         String secretKey = member.getSecretKey();
         String uuid = order.getUuid();
@@ -271,14 +271,14 @@ public class UpbitUtils {
             HttpResponse response = client.execute(request);
             HttpEntity entity = response.getEntity();
 
-            return new Order(EntityUtils.toString(entity, "UTF-8"));
+            return EntityUtils.toString(entity, "UTF-8");
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public static Order postOrders(Member member, String coinName, boolean isBuy, String volume, String price, boolean isMarket){
+    public static String postOrders(Member member, String coinName, boolean isBuy, String volume, String price, boolean isMarket){
         /*
         member : 필수
         coinName : 필수
@@ -338,7 +338,7 @@ public class UpbitUtils {
             HttpResponse response = client.execute(request);
             HttpEntity entity = response.getEntity();
 
-            return new Order(EntityUtils.toString(entity, "UTF-8"));
+            return EntityUtils.toString(entity, "UTF-8");
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {

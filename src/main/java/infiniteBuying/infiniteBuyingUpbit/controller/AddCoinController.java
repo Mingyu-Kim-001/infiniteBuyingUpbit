@@ -43,18 +43,12 @@ public class AddCoinController {
 
     @PostMapping("/addCoin")
     public String addCoin(@ModelAttribute @Valid Coin coin){
-
-//        Member member = memberRepository.findAll().get(0); //일단 임시처리
-//        System.out.println(member.getName());
-//        Map<String, String> tickers = Upbit.getTickers(Upbit.auth(member.getAccessKey(), member.getSecretKey()));
-
-//        System.out.println(CoinName);
-//        model.addAttribute("coin", coin);
-//        coin.setCoinName("KRW-BTC");
         coin.setMinimumBuying(Math.round(coin.getTotalBudget() / 40 / 2));
+        coin.setRemainingBudget(coin.getTotalBudget());
         System.out.println(coin.getCoinName());
         System.out.println(coin.getMinimumBuying());
-        member.coins.put(coin.getCoinName(), coin);
+        System.out.println(coin.getRemainingBudget());
+        member.getCoins().put(coin.getCoinName(), coin);
         infiniteBuyingLogic.batch(member);
         return "home";
     }
