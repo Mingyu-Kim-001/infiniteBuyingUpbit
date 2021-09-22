@@ -17,7 +17,7 @@ public class infiniteBuyingLogic {
     }
 
     //하루에 한 번씩 매수 로직에 따라 매수한다.
-    @Scheduled(cron = "0 21 00 * * *")
+    @Scheduled(cron = "0 30 00 * * *")
     public String batch() {
         System.out.println("batch");
         for (Coin coin : member.getCoins().values()) {
@@ -60,6 +60,7 @@ public class infiniteBuyingLogic {
         }
         System.out.println(UpbitUtils.getOrder(member, buyOrder));
         System.out.println("buyQuota " + coin.getCoinName() + " at price " + buyOrder.getPrice() + " and volume " + buyOrder.getExecuted_volume() + " uuid " );
+
         //성사된 거래 업데이트
         buyOrder = UpbitUtils.updateOrder(member, buyOrder);
         System.out.println("buyQuota " + coin.getCoinName() + " at price " + buyOrder.getPrice() + " and volume " + buyOrder.getExecuted_volume() + " uuid " );
@@ -77,10 +78,19 @@ public class infiniteBuyingLogic {
             String result = UpbitUtils.postOrders(member, coin.getCoinName(), true, "", Double.toString(buyingAmount), true);
             Order buyOrder = new Order(result);
 
+            //주문 후 처리까지 3초 대기
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            //성사된 거래 업데이트
+            buyOrder = UpbitUtils.updateOrder(member, buyOrder);
 
             System.out.println("buyIfLessThanAveragePrice " + coin.getCoinName() + " at price " + buyOrder.getPrice() + " and volume " + buyOrder.getExecuted_volume());
             coin.setCurrentVolume(coin.getCurrentVolume() + Double.parseDouble(buyOrder.getExecuted_volume()));
-            coin.setRemainingBudget(coin.getRemainingBudget() - Integer.parseInt(buyOrder.getPrice()));
+            coin.setRemainingBudget(coin.getRemainingBudget() - Double.parseDouble(buyOrder.getPrice()));
         }
 
     }
