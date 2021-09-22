@@ -50,9 +50,8 @@ public class AddCoinController {
         member.getCoins().put(coin.getCoinName(), coin);
         infiniteBuyingLogic.batch(member);
 
-
         model.addAttribute("member", member);
 
-        return "currentAssets";
+        return "redirect:currentAssets";
     }
 }
