@@ -100,36 +100,36 @@ public class UpbitUtils {
         }
     }
 
-    public static String getOrder(Member member, Order order) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        String accessKey = member.getAccessKey();
-        String secretKey = member.getSecretKey();
-        String uuid = order.getUuid();
-        HashMap<String, String> params = new HashMap<>();
-        params.put("uuid", uuid);
-
-        ArrayList<String> queryElements = new ArrayList<>();
-        for (Map.Entry<String, String> entity : params.entrySet()) {
-            queryElements.add(entity.getKey() + "=" + entity.getValue());
-        }
-
-        String queryString = String.join("&", queryElements.toArray(new String[0]));
-
-        MessageDigest md = MessageDigest.getInstance("SHA-512");
-        md.update(queryString.getBytes("UTF-8"));
-
-        String queryHash = String.format("%0128x", new BigInteger(1, md.digest()));
-
-        Algorithm algorithm = Algorithm.HMAC256(secretKey);
-        String jwtToken = JWT.create()
-                .withClaim("access_key", accessKey)
-                .withClaim("nonce", UUID.randomUUID().toString())
-                .withClaim("query_hash", queryHash)
-                .withClaim("query_hash_alg", "SHA512")
-                .sign(algorithm);
-
-        String authenticationToken = "Bearer " + jwtToken;
-
+    public static String getOrder(Member member, Order order) {
         try {
+            String accessKey = member.getAccessKey();
+            String secretKey = member.getSecretKey();
+            String uuid = order.getUuid();
+            HashMap<String, String> params = new HashMap<>();
+            params.put("uuid", uuid);
+
+            ArrayList<String> queryElements = new ArrayList<>();
+            for (Map.Entry<String, String> entity : params.entrySet()) {
+                queryElements.add(entity.getKey() + "=" + entity.getValue());
+            }
+
+            String queryString = String.join("&", queryElements.toArray(new String[0]));
+
+            MessageDigest md = MessageDigest.getInstance("SHA-512");
+
+            md.update(queryString.getBytes("UTF-8"));
+
+            String queryHash = String.format("%0128x", new BigInteger(1, md.digest()));
+
+            Algorithm algorithm = Algorithm.HMAC256(secretKey);
+            String jwtToken = JWT.create()
+                    .withClaim("access_key", accessKey)
+                    .withClaim("nonce", UUID.randomUUID().toString())
+                    .withClaim("query_hash", queryHash)
+                    .withClaim("query_hash_alg", "SHA512")
+                    .sign(algorithm);
+
+            String authenticationToken = "Bearer " + jwtToken;
             HttpClient client = HttpClientBuilder.create().build();
             HttpGet request = new HttpGet(serverUrl + "/v1/order?" + queryString);
             request.setHeader("Content-Type", "application/json");
@@ -139,7 +139,7 @@ public class UpbitUtils {
             HttpEntity entity = response.getEntity();
 
             return EntityUtils.toString(entity, "UTF-8");
-        } catch (IOException e) {
+        } catch (IOException | NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
         return null;
@@ -366,5 +366,8 @@ public class UpbitUtils {
             e.printStackTrace();
             return -1;
         }
+    }
+    public static Order updateOrder(Member member, Order order){
+        return new Order(getOrder(member, order));
     }
 }

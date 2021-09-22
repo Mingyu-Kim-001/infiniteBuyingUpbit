@@ -45,8 +45,24 @@ public class Order {
             setReserved_fee(map.get("reserved_fee"));
             setPaid_fee(map.get("paid_fee"));
             setLocked(map.get("locked"));
-            setExecuted_volume(map.get("excuted_volume"));
+            setExecuted_volume(map.get("executed_volume"));
             setTrades_count(String.valueOf(map.get("trades_count")));
+            System.out.println("uuid " + getUuid() + " " +
+                    " side " + getSide() +
+                    " ord_type " + getOrd_type() +
+                    " price " + getPrice() +
+                    " state " + getState() +
+                    " market " + getMarket() +
+                    " created_at " + getCreated_at() +
+                    " volume " + getVolume() +
+                    " remaining_volume " + getRemaining_volume() +
+                    " remaining_fee " + getRemaining_fee() +
+                    " reserved_fee " + getReserved_fee() +
+                    " paid_fee " + getPaid_fee() +
+                    " locked " + getLocked() +
+                    " executed_volume " + getExecuted_volume() +
+                    " trades_count " + getTrades_count()
+            );
         } catch (JsonParseException e) {
             e.printStackTrace();
         } catch (JsonMappingException e) {

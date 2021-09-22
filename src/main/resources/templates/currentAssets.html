@@ -50,11 +50,11 @@
             <td th:text="${coin.totalBudget}">total budget</td>
             <td th:text="${coin.currentPeriod}">current period</td>
             <td th:text="${coin.totalBudget - coin.remainingBudget}">purchase quaantity</td>
-            <td th:text="${(coin.totalBudget - coin.remainingBudget) / coin.currentAmount}">average price</td>
+            <td th:text="${(coin.totalBudget - coin.remainingBudget) / coin.currentVolume}">average price</td>
             <td th:text="${currentPrices.get(coin.getCoinName())}">current price</td>
 <!--            <td th:text="${coin.getTotalBudget()}">total budget</td>-->
 <!--            <td th:text="${coin.getCurrentPeriod()}">current period</td>-->
-<!--            <td th:text="${(coin.getTotalBudget() - coin.getRemainingBudget()) / coin.getCurrentAmount()}">average price</td>-->
+<!--            <td th:text="${(coin.getTotalBudget() - coin.getRemainingBudget()) / coin.getCurrentVolume()}">average price</td>-->
 <!--            <td th:text=""-->
 
         </tr>

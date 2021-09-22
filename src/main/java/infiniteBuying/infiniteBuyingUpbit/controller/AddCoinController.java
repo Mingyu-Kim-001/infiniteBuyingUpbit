@@ -41,14 +41,14 @@ public class AddCoinController {
 
     @PostMapping("/addCoin")
     public String addCoin(Model model, @ModelAttribute @Valid Coin coin){
-        coin.setMinimumBuying(Math.round(coin.getTotalBudget() / 40 / 2));
+        coin.setMinimumBuying((double) Math.round(coin.getTotalBudget() / 40 / 2));
         coin.setRemainingBudget(coin.getTotalBudget());
         System.out.println("addCoinController");
         System.out.println(coin.getCoinName());
         System.out.println(coin.getMinimumBuying());
         System.out.println(coin.getRemainingBudget());
         member.getCoins().put(coin.getCoinName(), coin);
-        infiniteBuyingLogic.batch(member);
+//        infiniteBuyingLogic.batch(member);
 
         model.addAttribute("member", member);
 
