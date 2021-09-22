@@ -14,16 +14,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 public class AddCoinController {
-//    private final MemberRepository memberRepository;
-//    @Autowired
-//    public AddCoinController(MemberRepository memberRepository){
-//        this.memberRepository = memberRepository;
-//    }
-//    @Autowired
-//    Member member;
 
     private final Member member;
 
@@ -34,6 +29,9 @@ public class AddCoinController {
 
     @GetMapping("/addCoin")
     public String dropDown(Model model){
+        if (member == null) {
+            return "fail/authFail";
+        }
         ArrayList<String> tickerNames = UpbitUtils.getTickers();
 //        System.out.println(tickerNames);
         model.addAttribute("tickerNames", tickerNames);
@@ -42,14 +40,18 @@ public class AddCoinController {
     }
 
     @PostMapping("/addCoin")
-    public String addCoin(@ModelAttribute @Valid Coin coin){
-        coin.setMinimumBuying(Math.round(coin.getTotalBudget() / 40 / 2));
+    public String addCoin(Model model, @ModelAttribute @Valid Coin coin){
+        coin.setMinimumBuying((double) Math.round(coin.getTotalBudget() / 40 / 2));
         coin.setRemainingBudget(coin.getTotalBudget());
+        System.out.println("addCoinController");
         System.out.println(coin.getCoinName());
         System.out.println(coin.getMinimumBuying());
         System.out.println(coin.getRemainingBudget());
         member.getCoins().put(coin.getCoinName(), coin);
-        infiniteBuyingLogic.batch(member);
-        return "home";
+//        infiniteBuyingLogic.batch(member);
+
+        model.addAttribute("member", member);
+
+        return "redirect:currentAssets";
     }
 }
