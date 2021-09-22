@@ -15,7 +15,7 @@
 
 <body>
     <h1 th:text="|${member.name}님, 환영합니다|"></h1>
-    <h2 th:text="|${member.name}님의 현재 자산|"> </h2>
+    <h2 th:text="|${member.name}님의 현재 자산(전체)|"> </h2>
     <table>
         <tr>
             <th>#</th>
@@ -30,6 +30,33 @@
             <td th:text="${asset.balance}">balance</td>
             <td th:text="${asset.locked}">locked</td>
             <td th:text="${asset.avg_buy_price}">avg_buy_price</td>
+        </tr>
+    </table>
+
+    <h2 th:text="|${member.name}님의 현재 무한매수법 현황|"> </h2>
+    <table>
+        <tr>
+            <th>#</th>
+            <th>coin name</th>
+            <th>total budget</th>
+            <th>current period</th>
+            <th>purchase quantity</th>
+            <th>average price</th>
+            <th>current price</th>
+        </tr>
+        <tr th:each="coin , index: ${member.getCoins().values()}">
+            <td th:text="${index.index}">#</td>
+            <td th:text="${coin.coinName}">coin name</td>
+            <td th:text="${coin.totalBudget}">total budget</td>
+            <td th:text="${coin.currentPeriod}">current period</td>
+            <td th:text="${coin.totalBudget - coin.remainingBudget}">purchase quaantity</td>
+            <td th:text="${(coin.totalBudget - coin.remainingBudget) / coin.currentAmount}">average price</td>
+            <td th:text="${currentPrices.get(coin.getCoinName())}">current price</td>
+<!--            <td th:text="${coin.getTotalBudget()}">total budget</td>-->
+<!--            <td th:text="${coin.getCurrentPeriod()}">current period</td>-->
+<!--            <td th:text="${(coin.getTotalBudget() - coin.getRemainingBudget()) / coin.getCurrentAmount()}">average price</td>-->
+<!--            <td th:text=""-->
+
         </tr>
     </table>
 

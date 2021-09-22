@@ -352,7 +352,7 @@ public class UpbitUtils {
     public static double getCurrentPrice(String coinName) {
 
         try{
-            URL url = new URL(serverUrl + "/v1/ticker");
+            URL url = new URL(serverUrl + "/v1/ticker/?markets=" + coinName);
             BufferedReader bf;
 
             bf = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"));

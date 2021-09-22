@@ -8,6 +8,7 @@ public class infiniteBuyingLogic {
 
     //하루에 한 번씩 매수 로직에 따라 매수한다.
     public static String batch(Member member) {
+        System.out.println("batch");
         for (Coin coin : member.getCoins().values()) {
             System.out.println("coinName : " + coin.getCoinName() + " period : " + coin.getCurrentPeriod() + " start");
             System.out.println("remaining Budget " + coin.getRemainingBudget() + " minimum buying " + coin.getMinimumBuying());
